@@ -1,0 +1,82 @@
+# socket.io 事件
+
+> 异步操作中，任务的进度和结果将通过socket.io通知
+
+> 您可以完成UI方面的操作
+
+#### socket 设置参数
+
+|  参数  	|  内容  	| 可选 	|           说明           	|
+|:------:	|:------:	|:----:	|:------------------------:	|
+|  endpoint  	| ws.6pan.cn 	|  否  	|  socket.io 地址  	|
+|  secure  	| true 	|  否 	|    是否启用SSL 必须为true    	|
+| namespace 	| notice 	|  否  	| 必须为notice 	|
+|  query  	| 用户id 	|  否  	|  必须为 user=xxxx  	|
+|  transport  	| 连接方式 	|  是  	|  可为 ["websocket"]  	|
+
+
+
+***js的示范***
+
+```json
+  const log = console.log;
+  const socket = io('ws.6pan.cn/notice', {
+
+    query: {
+      room: '5',
+      userIdentity: 5,
+    },
+    secure: true,
+    // transports: ['websocket']
+  });
+
+  socket.on('connect', () => {
+    const id = socket.id;
+
+    log('#connect,', id, socket);
+
+    // 监听自身 id 以实现 p2p 通讯
+    socket.on(id, msg => {
+      log('#receive,', msg);
+    });
+  });
+
+  // 接收在线用户信息
+  socket.on('online', msg => {
+    log('#online,', msg);
+  });
+
+  // 系统事件
+  socket.on('file.progress', msg => {
+    log('#file progress: ', msg);
+  });
+  socket.on('file.complete', msg => {
+    log('#file complete: ', msg);
+  });
+  socket.on('file.error', msg => {
+    log('#file error: ', msg);
+  });
+  socket.on('file.cancel', msg => {
+    log('#file cancel: ', msg);
+  });
+  socket.on('disconnecting', () => {
+    log('#disconnecting');
+  });
+  
+  socket.on('disconnecting', () => {
+    log('#disconnecting');
+  });
+
+  socket.on('error', err => {
+    log('#error', err);
+  });
+
+  window.socket = socket;
+```
+
+***注意***
+
+* 因为主流浏览器（如chrome、firefox）尚未支持 websocket over https (RFC8441) 故暂时只能使用 http/1.1
+* 参见 (https://lists.w3.org/Archives/Public/ietf-http-wg/2018JanMar/0210.html)
+* 不应将事件通知作为文件状态的最终判断方式，因通知可能丢失或者延后。如果需要在异步操作中锁定UI，请为UI的锁设置超时时间。
+* 参见文件任务详情
