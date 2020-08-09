@@ -1,0 +1,52 @@
+# 恢复文件
+
+> 将回收站的文件恢复或复制到指定位置
+
+> 异步操作
+
+#### 复制文件或文件夹使用的参数
+
+|  参数  	|  类型  	| 可选 	|           说明           	|
+|:------:	|:------:	|:----:	|:------------------------:	|
+|  sourceIdentity  	| array<string> 	|  是  	|   回收id    	|
+| path 	| string 	|  是  	| 目的地路径，与identity二选一 	|
+|  identity  	| string 	|  是  	|  目的地id，与path二选一  	|
+
+* 如果 path identity 均为空，则恢复到原始文件
+
+```POST``` ```/v3/newtrash/recover```
+
+
+```json
+{
+	"sourceIdentity": ["23f8d96a9b5427fe3166b361a8460092"]
+}
+```
+
+> 恢复到指定的文件夹
+
+```json
+{
+	"sourceIdentity": ["23f8d96a9b5427fe3166b361a8460092"],
+  "path": "/recov_dest"
+}
+```
+
+
+
+
+#### 注意
+
+* 如果文件夹内文件较多，则时间相对较长
+
+#### 响应
+
+> 文件恢复成功(异步)
+
+```json
+{
+    "identity": "recover_bsefjaekepp0qvba61k0_5",
+    "data": 0,
+    "async": true
+}
+```
